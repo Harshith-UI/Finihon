@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
 import { Upload, FileText, CheckCircle, XCircle, Loader } from 'lucide-react';
 
 const InvoiceUpload = () => {
@@ -8,7 +7,6 @@ const InvoiceUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
   const [dragOver, setDragOver] = useState(false);
-  const { user } = useAuth();
 
   const handleFileSelect = (selectedFile) => {
     if (selectedFile && selectedFile.type === 'application/pdf') {
@@ -38,39 +36,15 @@ const InvoiceUpload = () => {
 
   const handleSubmit = async () => {
     if (!file) return;
-    if (!user) {
-      setStatus({ type: 'error', message: 'Please log in to upload invoices' });
-      return;
-    }
 
     setUploading(true);
     setStatus(null);
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('userId', user.id);
-    formData.append('username', user.username);
 
     try {
-      // First, try to upload to our new backend API
-      await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-invoice', {
-        userId: user.id,
-        username: user.username,
-        fileName: file.name
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Then upload to n8n for processing
-      const n8nFormData = new FormData();
-      n8nFormData.append('file', file);
-      n8nFormData.append('userId', user.id);
-      n8nFormData.append('username', user.username);
-
-      await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-pdf', n8nFormData, {
+      const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-pdf', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -81,10 +55,9 @@ const InvoiceUpload = () => {
         message: 'Invoice uploaded and processing started successfully!'
       });
     } catch (error) {
-      console.error('Upload error:', error);
       setStatus({
         type: 'error',
-        message: error.response?.data?.message || 'Failed to upload invoice. Please try again.'
+        message: 'Failed to upload invoice. Please try again.'
       });
     } finally {
       setUploading(false);

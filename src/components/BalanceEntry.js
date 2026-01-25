@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../contexts/AuthContext';
 import { DollarSign, CheckCircle, XCircle, Loader, User } from 'lucide-react';
 
 const BalanceEntry = () => {
   const [formData, setFormData] = useState({
+    name: '',
     balance: ''
   });
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
-  const { user } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +20,11 @@ const BalanceEntry = () => {
         ...prev,
         [name]: numericValue
       }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
     }
 
     // Clear any previous status when user starts typing
@@ -28,6 +32,11 @@ const BalanceEntry = () => {
   };
 
   const validateForm = () => {
+    if (!formData.name.trim()) {
+      setStatus({ type: 'error', message: 'Please enter a name' });
+      return false;
+    }
+
     if (!formData.balance || parseFloat(formData.balance) < 0) {
       setStatus({ type: 'error', message: 'Please enter a valid balance amount' });
       return false;
@@ -39,34 +48,18 @@ const BalanceEntry = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) {
-      setStatus({ type: 'error', message: 'Please log in to add balance entries' });
-      return;
-    }
-
     if (!validateForm()) return;
 
     setSubmitting(true);
     setStatus(null);
 
     try {
-      // First, try to save to our new backend API
-      await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/add-balance', {
-        balanceAmount: parseFloat(formData.balance)
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Then send to n8n for processing
-      const n8nPayload = {
-        name: user.username,
+      const payload = {
+        name: formData.name.trim(),
         balance: parseFloat(formData.balance)
       };
 
-      await axios.post('https://n8n.manifestingpodcasts.site/webhook/name,balance', n8nPayload, {
+      const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/name,balance', payload, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -74,16 +67,15 @@ const BalanceEntry = () => {
 
       setStatus({
         type: 'success',
-        message: `Balance entry for "${user.username}" saved successfully!`
+        message: `Balance entry for "${formData.name}" saved successfully!`
       });
 
       // Clear form on success
-      setFormData({ balance: '' });
+      setFormData({ name: '', balance: '' });
     } catch (error) {
-      console.error('Save error:', error);
       setStatus({
         type: 'error',
-        message: error.response?.data?.message || 'Failed to save balance entry. Please try again.'
+        message: 'Failed to save balance entry. Please try again.'
       });
     } finally {
       setSubmitting(false);
@@ -109,10 +101,12 @@ const BalanceEntry = () => {
                 type="text"
                 id="name"
                 name="name"
-                value={user?.username || ''}
-                readOnly
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter account holder name"
                 className="form-input"
-                style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
+                disabled={submitting}
+                required
               />
             </div>
           </div>
@@ -151,7 +145,7 @@ const BalanceEntry = () => {
           <button
             type="submit"
             className="submit-button"
-            disabled={submitting || !formData.balance}
+            disabled={submitting || !formData.name.trim() || !formData.balance}
           >
             {submitting ? (
               <>
