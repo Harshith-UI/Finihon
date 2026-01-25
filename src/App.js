@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
 import { AuthProvider } from './contexts/AuthContext';
+import ProtectedLayout from './components/ProtectedLayout';
 import InvoiceUpload from './components/InvoiceUpload';
 import BankStatementUpload from './components/BankStatementUpload';
 import BalanceEntry from './components/BalanceEntry';
-import Login from './components/Login';
 
 function App() {
   return (
@@ -18,12 +18,13 @@ function App() {
         </header>
 
         <main className="dashboard-main">
-          <Login />
-          <div className="dashboard-grid">
-            <InvoiceUpload />
-            <BankStatementUpload />
-            <BalanceEntry />
-          </div>
+          <ProtectedLayout>
+            <div className="dashboard-grid">
+              <InvoiceUpload />
+              <BankStatementUpload />
+              <BalanceEntry />
+            </div>
+          </ProtectedLayout>
         </main>
 
         <footer className="dashboard-footer">
