@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { DollarSign, CheckCircle, XCircle, Loader, User } from 'lucide-react';
 
 const BalanceEntry = () => {

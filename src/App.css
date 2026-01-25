@@ -328,6 +328,121 @@ body {
   }
 }
 
+/* Authentication Styles */
+.auth-container {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+  padding: 2rem;
+  text-align: center;
+}
+
+.auth-card.loading {
+  padding: 3rem;
+}
+
+.auth-icon {
+  margin-bottom: 1rem;
+}
+
+.auth-card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.auth-card p {
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.auth-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.auth-button.logout {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.auth-button.logout:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.auth-card.authenticated {
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.user-details h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.user-email {
+  color: #64748b;
+  margin-bottom: 0.25rem;
+}
+
+.user-id {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 1rem;
+}
+
 /* Footer */
 .dashboard-footer {
   text-align: center;

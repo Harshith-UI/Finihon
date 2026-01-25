@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { Upload, FileText, CheckCircle, XCircle, Loader } from 'lucide-react';
 
 const InvoiceUpload = () => {
