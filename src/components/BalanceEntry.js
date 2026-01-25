@@ -51,7 +51,7 @@ const BalanceEntry = () => {
 
     try {
       // First, try to save to our new backend API
-      const response = await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/add-balance', {
+      await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/add-balance', {
         balanceAmount: parseFloat(formData.balance)
       }, {
         headers: {

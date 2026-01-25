@@ -53,7 +53,7 @@ const InvoiceUpload = () => {
 
     try {
       // First, try to upload to our new backend API
-      const response = await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-invoice', {
+      await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-invoice', {
         userId: user.id,
         username: user.username,
         fileName: file.name

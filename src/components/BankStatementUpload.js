@@ -67,7 +67,7 @@ const BankStatementUpload = () => {
 
     try {
       // First, try to upload to our new backend API
-      const response = await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-statement', {
+      await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-statement', {
         userId: user.id,
         username: user.username,
         fileName: file.name
