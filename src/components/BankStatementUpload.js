@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
 import { Upload, FileText, CheckCircle, XCircle, Loader, CreditCard } from 'lucide-react';
 
 const BankStatementUpload = () => {
@@ -7,6 +8,7 @@ const BankStatementUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const { user } = useAuth();
 
   const handleFileSelect = (selectedFile) => {
     if (selectedFile) {
@@ -50,15 +52,39 @@ const BankStatementUpload = () => {
 
   const handleSubmit = async () => {
     if (!file) return;
+    if (!user) {
+      setStatus({ type: 'error', message: 'Please log in to upload bank statements' });
+      return;
+    }
 
     setUploading(true);
     setStatus(null);
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('userId', user.id);
+    formData.append('username', user.username);
 
     try {
-      const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-passbook', formData, {
+      // First, try to upload to our new backend API
+      const response = await axios.post('https://financial-dashboard-backend.onrender.com/api/financial/upload-statement', {
+        userId: user.id,
+        username: user.username,
+        fileName: file.name
+      }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Then upload to n8n for processing
+      const n8nFormData = new FormData();
+      n8nFormData.append('file', file);
+      n8nFormData.append('userId', user.id);
+      n8nFormData.append('username', user.username);
+
+      await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-passbook', n8nFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -69,9 +95,10 @@ const BankStatementUpload = () => {
         message: 'Bank statement uploaded and balance calculation started!'
       });
     } catch (error) {
+      console.error('Upload error:', error);
       setStatus({
         type: 'error',
-        message: 'Failed to upload bank statement. Please try again.'
+        message: error.response?.data?.message || 'Failed to upload bank statement. Please try again.'
       });
     } finally {
       setUploading(false);
