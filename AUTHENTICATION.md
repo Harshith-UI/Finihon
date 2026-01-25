@@ -35,10 +35,15 @@ The `AuthProvider` component manages all authentication state:
 Create a `.env` file with the following variables:
 
 ```bash
-REACT_APP_COGNITO_DOMAIN=your-cognito-domain.auth.ap-south-1.amazoncognito.com
-REACT_APP_COGNITO_CLIENT_ID=your-app-client-id
+REACT_APP_COGNITO_DOMAIN=us-east-1vyybvgqpj.auth.us-east-1.amazoncognito.com
+REACT_APP_COGNITO_CLIENT_ID=n7nvic500og1nih0tra7v2am6
 REACT_APP_REDIRECT_URI=https://finihon.onrender.com/
 ```
+
+**Note:** The application is pre-configured with your Cognito credentials:
+- **User Pool Domain:** `us-east-1vyybvgqpj.auth.us-east-1.amazoncognito.com`
+- **Client ID:** `n7nvic500og1nih0tra7v2am6`
+- **Redirect URI:** `https://finihon.onrender.com/`
 
 ### Cognito Setup
 

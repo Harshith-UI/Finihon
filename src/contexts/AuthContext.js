@@ -18,8 +18,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Cognito configuration
-  const COGNITO_DOMAIN = process.env.REACT_APP_COGNITO_DOMAIN || 'your-cognito-domain.auth.ap-south-1.amazoncognito.com';
-  const CLIENT_ID = process.env.REACT_APP_COGNITO_CLIENT_ID || 'your-app-client-id';
+  const COGNITO_DOMAIN = process.env.REACT_APP_COGNITO_DOMAIN || 'us-east-1vyybvgqpj.auth.us-east-1.amazoncognito.com';
+  const CLIENT_ID = process.env.REACT_APP_COGNITO_CLIENT_ID || 'n7nvic500og1nih0tra7v2am6';
   const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || 'https://finihon.onrender.com/';
   const TOKEN_ENDPOINT = `https://${COGNITO_DOMAIN}/oauth2/token`;
 
