@@ -6,7 +6,6 @@ import { DollarSign, CheckCircle, XCircle, Loader, User } from 'lucide-react';
 const BalanceEntry = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
     balance: ''
   });
   const [submitting, setSubmitting] = useState(false);
@@ -22,11 +21,6 @@ const BalanceEntry = () => {
         ...prev,
         [name]: numericValue
       }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
     }
 
     // Clear any previous status when user starts typing
@@ -34,11 +28,6 @@ const BalanceEntry = () => {
   };
 
   const validateForm = () => {
-    if (!formData.name.trim()) {
-      setStatus({ type: 'error', message: 'Please enter a name' });
-      return false;
-    }
-
     if (!formData.balance || parseFloat(formData.balance) < 0) {
       setStatus({ type: 'error', message: 'Please enter a valid balance amount' });
       return false;
@@ -58,7 +47,7 @@ const BalanceEntry = () => {
     try {
       const payload = {
         action: 'manual_balance',
-        userId: user?.name || formData.name.trim(),
+        userId: user?.name || 'Unknown',
         availableAmount: parseFloat(formData.balance)
       };
 
@@ -70,11 +59,11 @@ const BalanceEntry = () => {
 
       setStatus({
         type: 'success',
-        message: `Balance entry for "${formData.name}" saved successfully!`
+        message: 'Balance updated successfully!'
       });
 
       // Clear form on success
-      setFormData({ name: '', balance: '' });
+      setFormData({ balance: '' });
     } catch (error) {
       setStatus({
         type: 'error',
@@ -89,31 +78,11 @@ const BalanceEntry = () => {
     <div className="dashboard-card">
       <div className="card-header">
         <User className="card-icon" />
-        <h3 className="card-title">Manual Balance Entry</h3>
+        <h3 className="card-title">Balance Update</h3>
       </div>
 
       <div className="card-content">
         <form onSubmit={handleSubmit} className="balance-form">
-          <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Account Holder Name
-            </label>
-            <div className="input-group">
-              <User size={16} className="input-icon" />
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter account holder name"
-                className="form-input"
-                disabled={submitting}
-                required
-              />
-            </div>
-          </div>
-
           <div className="form-group">
             <label htmlFor="balance" className="form-label">
               Current Balance
@@ -148,17 +117,17 @@ const BalanceEntry = () => {
           <button
             type="submit"
             className="submit-button"
-            disabled={submitting || !formData.name.trim() || !formData.balance}
+            disabled={submitting || !formData.balance}
           >
             {submitting ? (
               <>
                 <Loader className="loading-spinner" size={16} />
-                Saving...
+                Updating...
               </>
             ) : (
               <>
                 <DollarSign size={16} />
-                Save Balance Entry
+                Update Balance
               </>
             )}
           </button>
