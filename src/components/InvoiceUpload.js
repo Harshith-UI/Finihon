@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Upload, FileText, CheckCircle, XCircle, Loader } from 'lucide-react';
 
 const InvoiceUpload = () => {
+  const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
@@ -43,6 +44,8 @@ const InvoiceUpload = () => {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('action', 'invoice_upload');
+    formData.append('userId', user?.name || 'Unknown');
 
     try {
       const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-pdf', formData, {

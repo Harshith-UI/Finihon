@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { DollarSign, CheckCircle, XCircle, Loader, User } from 'lucide-react';
 
 const BalanceEntry = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     balance: ''
@@ -56,8 +57,9 @@ const BalanceEntry = () => {
 
     try {
       const payload = {
-        name: formData.name.trim(),
-        balance: parseFloat(formData.balance)
+        action: 'manual_balance',
+        userId: user?.name || formData.name.trim(),
+        availableAmount: parseFloat(formData.balance)
       };
 
       const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/name,balance', payload, {

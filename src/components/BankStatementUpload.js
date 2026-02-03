@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Upload, FileText, CheckCircle, XCircle, Loader, CreditCard } from 'lucide-react';
 
 const BankStatementUpload = () => {
+  const { user } = useAuth();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
@@ -57,6 +58,8 @@ const BankStatementUpload = () => {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('action', 'bank_statement');
+    formData.append('userId', user?.name || 'Unknown');
 
     try {
       const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/upload-passbook', formData, {
