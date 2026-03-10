@@ -1,36 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedLayout from './components/ProtectedLayout';
-import InvoiceUpload from './components/InvoiceUpload';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import BankStatementUpload from './components/BankStatementUpload';
+import InvoiceUpload from './components/InvoiceUpload';
 import BalanceEntry from './components/BalanceEntry';
+import AIAnalysis from './components/AIAnalysis';
+import SpendingChart from './components/SpendingChart';
 
 function App() {
+  const [analysisData, setAnalysisData] = useState(null);
+
+  const handleAnalysisComplete = (data) => {
+    setAnalysisData(data);
+  };
+
   return (
     <AuthProvider>
-      <div className="App">
-        <header className="dashboard-header">
-          <div className="header-content">
-            <h1 className="dashboard-title">Financial Data Processor</h1>
-            <p className="dashboard-subtitle">Automate your financial document processing</p>
+      <ProtectedLayout>
+        <div className="app-layout">
+          <Sidebar />
+          <div className="main-wrapper">
+            <Header />
+            <main className="dashboard-content">
+              <div className="grid-top">
+                <BankStatementUpload onAnalysisComplete={handleAnalysisComplete} />
+                <BalanceEntry />
+              </div>
+              <div className="grid-bottom">
+                <AIAnalysis report={analysisData?.report} />
+                <SpendingChart categoryTotals={analysisData?.categoryTotals} />
+                <InvoiceUpload />
+              </div>
+            </main>
           </div>
-        </header>
-
-        <main className="dashboard-main">
-          <ProtectedLayout>
-            <div className="dashboard-grid">
-              <InvoiceUpload />
-              <BankStatementUpload />
-              <BalanceEntry />
-            </div>
-          </ProtectedLayout>
-        </main>
-
-        <footer className="dashboard-footer">
-          <p>Powered by n8n & React • Financial data processing made simple</p>
-        </footer>
-      </div>
+        </div>
+      </ProtectedLayout>
     </AuthProvider>
   );
 }

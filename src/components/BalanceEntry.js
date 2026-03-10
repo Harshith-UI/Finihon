@@ -1,100 +1,80 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import { DollarSign, CheckCircle, XCircle, Loader, User } from 'lucide-react';
+import { DollarSign, CheckCircle, XCircle, Loader, Wallet } from 'lucide-react';
 
 const BalanceEntry = () => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({
-    balance: ''
-  });
+  const [balance, setBalance] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
+  const [lastBalance, setLastBalance] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === 'balance') {
-      // Only allow numbers and decimal point for balance
-      const numericValue = value.replace(/[^0-9.]/g, '');
-      setFormData(prev => ({
-        ...prev,
-        [name]: numericValue
-      }));
-    }
-
-    // Clear any previous status when user starts typing
+  const handleChange = (e) => {
+    const val = e.target.value.replace(/[^0-9.]/g, '');
+    setBalance(val);
     if (status) setStatus(null);
-  };
-
-  const validateForm = () => {
-    if (!formData.balance || parseFloat(formData.balance) < 0) {
-      setStatus({ type: 'error', message: 'Please enter a valid balance amount' });
-      return false;
-    }
-
-    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) return;
+    if (!balance || parseFloat(balance) < 0) {
+      setStatus({ type: 'error', message: 'Please enter a valid amount' });
+      return;
+    }
 
     setSubmitting(true);
     setStatus(null);
 
     try {
-      const payload = {
-        action: 'manual_balance',
-        userId: user?.name || 'Unknown',
-        availableAmount: parseFloat(formData.balance)
-      };
-
-      const response = await axios.post('https://n8n.manifestingpodcasts.site/webhook/name,balance', payload, {
-        headers: {
-          'Content-Type': 'application/json',
+      await axios.post(
+        'https://n8n.manifestingpodcasts.site/webhook/name,balance',
+        {
+          action: 'manual_balance',
+          userId: user?.name || 'Unknown',
+          availableAmount: parseFloat(balance),
         },
-      });
-
-      setStatus({
-        type: 'success',
-        message: 'Balance updated successfully!'
-      });
-
-      // Clear form on success
-      setFormData({ balance: '' });
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      setLastBalance(parseFloat(balance));
+      setStatus({ type: 'success', message: 'Balance updated!' });
+      setBalance('');
     } catch (error) {
-      setStatus({
-        type: 'error',
-        message: 'Failed to save balance entry. Please try again.'
-      });
+      setStatus({ type: 'error', message: 'Failed to update balance.' });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <div className="dashboard-card">
-      <div className="card-header">
-        <User className="card-icon" />
-        <h3 className="card-title">Balance Update</h3>
+    <div className="dashboard-card balance-card">
+      <div className="card-top-bar">
+        <div className="card-top-left">
+          <Wallet size={18} className="card-icon-accent" />
+          <h3>Balance</h3>
+        </div>
       </div>
+      <div className="card-body">
+        {lastBalance !== null && (
+          <div className="balance-display">
+            <span className="balance-label">Current Balance</span>
+            <div className="balance-amount">
+              <DollarSign size={22} />
+              <span>{lastBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            </div>
+          </div>
+        )}
 
-      <div className="card-content">
         <form onSubmit={handleSubmit} className="balance-form">
           <div className="form-group">
-            <label htmlFor="balance" className="form-label">
-              Current Balance
-            </label>
-            <div className="input-group">
-              <DollarSign size={16} className="input-icon" />
+            <label htmlFor="balance" className="form-label">Update Balance</label>
+            <div className="input-wrap">
+              <DollarSign size={15} className="input-icon" />
               <input
                 type="text"
                 id="balance"
-                name="balance"
-                value={formData.balance}
-                onChange={handleInputChange}
+                value={balance}
+                onChange={handleChange}
                 placeholder="0.00"
                 className="form-input"
                 disabled={submitting}
@@ -104,31 +84,17 @@ const BalanceEntry = () => {
           </div>
 
           {status && (
-            <div className={`status-message ${status.type}`}>
-              {status.type === 'success' ? (
-                <CheckCircle size={16} />
-              ) : (
-                <XCircle size={16} />
-              )}
+            <div className={`status-msg ${status.type}`}>
+              {status.type === 'success' ? <CheckCircle size={15} /> : <XCircle size={15} />}
               <span>{status.message}</span>
             </div>
           )}
 
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={submitting || !formData.balance}
-          >
+          <button type="submit" className="action-btn" disabled={submitting || !balance}>
             {submitting ? (
-              <>
-                <Loader className="loading-spinner" size={16} />
-                Updating...
-              </>
+              <><Loader className="spin" size={15} /> Updating...</>
             ) : (
-              <>
-                <DollarSign size={16} />
-                Update Balance
-              </>
+              <><DollarSign size={15} /> Update Balance</>
             )}
           </button>
         </form>
