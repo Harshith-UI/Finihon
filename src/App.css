@@ -267,13 +267,33 @@ body {
   padding: 1.25rem;
 }
 
-.expand-icon {
+.expand-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
   color: var(--text-muted);
+  border-radius: 6px;
   cursor: pointer;
-  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
-.expand-icon:hover { color: var(--text-primary); }
+.expand-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ai-expanded {
+  grid-column: 1 / -1;
+  z-index: 10;
+}
+
+.ai-report-content.expanded {
+  max-height: none;
+}
 
 .icon-btn {
   width: 28px;

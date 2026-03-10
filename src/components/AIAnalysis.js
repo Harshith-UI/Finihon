@@ -1,23 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Sparkles, Maximize2, TrendingUp, CheckCircle } from 'lucide-react';
+import { Sparkles, Maximize2, Minimize2, TrendingUp, CheckCircle } from 'lucide-react';
 
 const AIAnalysis = ({ report }) => {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <div className="dashboard-card ai-card">
+    <div className={`dashboard-card ai-card ${expanded ? 'ai-expanded' : ''}`}>
       <div className="card-top-bar">
         <div className="card-top-left">
           <Sparkles size={16} className="sparkle-icon" />
           <h3>How can I help you?</h3>
         </div>
-        <Maximize2 size={14} className="expand-icon" />
+        <button
+          className="expand-btn"
+          onClick={() => setExpanded(!expanded)}
+          title={expanded ? 'Collapse' : 'Expand'}
+        >
+          {expanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </button>
       </div>
       <div className="card-body">
         <div className="ai-label-row">
           <span className="ai-label">AI Summary</span>
         </div>
         {report ? (
-          <div className="ai-report-content">
+          <div className={`ai-report-content ${expanded ? 'expanded' : ''}`}>
             <ReactMarkdown>{report}</ReactMarkdown>
           </div>
         ) : (
