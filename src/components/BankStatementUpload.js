@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, FileText, CheckCircle, XCircle, Loader, CreditCard } from 'lucide-react';
+import { Upload, FileText, CheckCircle, XCircle, Loader, CreditCard, X, Bot } from 'lucide-react';
 
 const BankStatementUpload = () => {
   const { user } = useAuth();
@@ -9,6 +10,7 @@ const BankStatementUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const [aiResponse, setAiResponse] = useState(null);
 
   const handleFileSelect = (selectedFile) => {
     if (selectedFile) {
@@ -24,6 +26,7 @@ const BankStatementUpload = () => {
       if (allowedTypes.includes(selectedFile.type)) {
         setFile(selectedFile);
         setStatus(null);
+        setAiResponse(null);
       } else {
         setStatus({
           type: 'error',
@@ -50,11 +53,46 @@ const BankStatementUpload = () => {
     handleFileSelect(droppedFile);
   };
 
+  // Extract the AI response text from various possible n8n response formats
+  const extractResponseText = (data) => {
+    if (!data) return null;
+
+    // If it's a string already, return it
+    if (typeof data === 'string') return data;
+
+    // If it's an array, take the first item
+    if (Array.isArray(data)) {
+      if (data.length === 0) return null;
+      return extractResponseText(data[0]);
+    }
+
+    // Common n8n output field names from "Message a model" / AI nodes
+    const possibleFields = [
+      'output', 'text', 'response', 'message', 'content',
+      'result', 'data', 'answer', 'completion'
+    ];
+
+    for (const field of possibleFields) {
+      if (data[field] !== undefined && data[field] !== null) {
+        if (typeof data[field] === 'string') return data[field];
+        if (typeof data[field] === 'object') return extractResponseText(data[field]);
+      }
+    }
+
+    // If nothing matched, try to stringify the whole thing
+    try {
+      return JSON.stringify(data, null, 2);
+    } catch {
+      return String(data);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!file) return;
 
     setUploading(true);
     setStatus(null);
+    setAiResponse(null);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -68,9 +106,13 @@ const BankStatementUpload = () => {
         },
       });
 
+      // Extract the AI model response
+      const responseText = extractResponseText(response.data);
+      setAiResponse(responseText);
+
       setStatus({
         type: 'success',
-        message: 'Bank statement uploaded and balance calculation started!'
+        message: 'Bank statement processed successfully!'
       });
     } catch (error) {
       setStatus({
@@ -105,7 +147,7 @@ const BankStatementUpload = () => {
               </div>
               <button
                 className="remove-file"
-                onClick={() => setFile(null)}
+                onClick={() => { setFile(null); setAiResponse(null); }}
                 disabled={uploading}
               >
                 <XCircle size={16} />
@@ -142,6 +184,26 @@ const BankStatementUpload = () => {
           </div>
         )}
 
+        {/* AI Model Response Display */}
+        {aiResponse && (
+          <div className="ai-response-container">
+            <div className="ai-response-header">
+              <Bot size={18} />
+              <span>AI Analysis</span>
+              <button
+                className="ai-response-close"
+                onClick={() => setAiResponse(null)}
+                title="Dismiss"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <div className="ai-response-body">
+              <ReactMarkdown>{aiResponse}</ReactMarkdown>
+            </div>
+          </div>
+        )}
+
         <button
           className="upload-button"
           onClick={handleSubmit}
@@ -150,12 +212,12 @@ const BankStatementUpload = () => {
           {uploading ? (
             <>
               <Loader className="loading-spinner" size={16} />
-              Calculating Balance...
+              Analyzing Statement...
             </>
           ) : (
             <>
               <Upload size={16} />
-              Process Statement & Update Balance
+              Process Statement & Analyze
             </>
           )}
         </button>

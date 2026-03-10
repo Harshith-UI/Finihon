@@ -528,6 +528,115 @@ body {
   gap: 1rem;
 }
 
+/* AI Response Display */
+.ai-response-container {
+  margin: 1rem 0;
+  border-radius: 10px;
+  border: 1px solid #c7d2fe;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-response-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.ai-response-close {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.ai-response-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ai-response-body {
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: #1e1b4b;
+  max-height: 400px;
+  overflow-y: auto;
+  word-wrap: break-word;
+}
+
+.ai-response-body h1,
+.ai-response-body h2,
+.ai-response-body h3 {
+  margin: 1rem 0 0.5rem;
+  color: #4c1d95;
+  font-weight: 700;
+}
+
+.ai-response-body h1 { font-size: 1.2rem; }
+.ai-response-body h2 { font-size: 1.05rem; }
+.ai-response-body h3 { font-size: 0.95rem; }
+
+.ai-response-body h1:first-child,
+.ai-response-body h2:first-child,
+.ai-response-body h3:first-child {
+  margin-top: 0;
+}
+
+.ai-response-body p {
+  margin: 0.5rem 0;
+}
+
+.ai-response-body strong {
+  color: #3b0764;
+}
+
+.ai-response-body ul,
+.ai-response-body ol {
+  margin: 0.4rem 0;
+  padding-left: 1.5rem;
+}
+
+.ai-response-body li {
+  margin: 0.2rem 0;
+}
+
+.ai-response-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-response-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-response-body::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 3px;
+}
+
 /* Footer */
 .dashboard-footer {
   text-align: center;
